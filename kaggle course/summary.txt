@@ -1,0 +1,44 @@
+SQL:
+Important Keywords:
+	- SELECT
+	- FROM
+	- WHERE
+	- LIKE
+	- INNER JOIN
+	- ON, complementing INNER JOIN, specifying join key
+	- GROUP BY
+	- HAVING, complementing GROUP BY CLAUSE
+	- ORDER BY
+	- DESC, descending order for ORDER BY clause
+	- AS for aliasing
+	- WITH, create like a small table(?)
+	- EXTRACT
+
+Python:
+from google.cloud import bigquery
+
+# creating client
+client = bigquery.Client()
+
+# dataset reference
+dataset_ref = client.dataset('dataset_name', project='project_name')
+
+# fetch the dataset
+dataset = client.get_dataset(dataset_ref)
+
+# list of tables in dataset
+tables = list(client.list_tables(dataset))
+list_of_tables = [table.table_id for table in tables]
+
+# construct a reference to the 'table' table
+table_ref = dataset_ref.table('table_name')
+
+# API request - fetch the table
+table = client.get_table(table_ref)
+
+# print information on all the columns in the 'table_name' table 
+# in the 'dataset_name' dataset
+table.schema
+
+# preview the first five line of the 'table_name' table
+client.list_rows(table, max_results=5).to_dataframe()

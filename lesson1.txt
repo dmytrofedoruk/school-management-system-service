@@ -1,0 +1,20 @@
+--------------------------------------------------------
+Structured Query Language (SQL)
+
+- language for interacting with Relational Database 
+Management System (RDBMS)
+- doing CRUD
+- manage, design, perform administrative tasks
+- vary between systems
+- hybrid language:
+	- Data Query Language: querying
+	- Data Definition Language: define schemas
+	- Data Control Language: control access
+	- Data Manipulation, insert, update, delete data
+
+--------------------------------------------------------
+Queries
+- set of instructions to get information from database
+example:
+SELECT, FROM, WHERE
+
