@@ -13,11 +13,11 @@ DESCRIBE student;
 
 SELECT * FROM student;
 
-INSERT INTO student(name, major) VALUES('Agus', 'Math');
-INSERT INTO student(name, major) VALUES('Sekar', 'Administration');
-INSERT INTO student(name, major) VALUES('Saskia', 'Accounting');
-INSERT INTO student(name, major) VALUES('Arifa', 'Public Health');
-INSERT INTO student(name, major) VALUES('Sintya', 'Communication');
+INSERT INTO student VALUES(1, 'Agus', 'Math');
+INSERT INTO student VALUES(2, 'Joe', 'Administration');
+INSERT INTO student VALUES(3, 'Jim', 'Accounting');
+INSERT INTO student VALUES(4, 'Meredith', 'Public Health');
+INSERT INTO student(student_id, name) VALUES(5, 'Joan');
 
 UPDATE student
 SET major = 'Mathematics'
