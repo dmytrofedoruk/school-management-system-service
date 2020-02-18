@@ -1,0 +1,50 @@
+-- Introduction 3 Updating
+
+DROP TABLE student;
+
+CREATE TABLE student (
+    student_id INT AUTO_INCREMENT,
+    name VARCHAR(20) NOT NULL,
+    major VARCHAR(20) DEFAULT 'undecided',
+    PRIMARY KEY(student_id)
+);
+
+DESCRIBE student;
+
+SELECT * FROM student;
+
+INSERT INTO student(name, major) VALUES('Agus', 'Math');
+INSERT INTO student(name, major) VALUES('Sekar', 'Administration');
+INSERT INTO student(name, major) VALUES('Saskia', 'Accounting');
+INSERT INTO student(name, major) VALUES('Arifa', 'Public Health');
+INSERT INTO student(name, major) VALUES('Sintya', 'Communication');
+
+UPDATE student
+SET major = 'Mathematics'
+WHERE major = 'Math';
+
+UPDATE student
+SET major = 'Bio'
+WHERE major = 'Biology';
+
+UPDATE student
+SET major = 'Mathematics'
+WHERE major = 'Math';
+
+UPDATE student
+SET title = 'Cum Laude'
+WHERE gpa >= 3.50;
+
+UPDATE student
+SET major = 'Biochemistry'
+WHERE major = 'Bio' OR major = 'Chemistry';
+
+UPDATE student
+SET name = 'Richard', major = 'Mathematics'
+WHERE student_id = 1;
+
+DELETE FROM student
+WHERE student_id = 5;
+
+DELETE FROM student
+WHERE name = 'Sekar' AND major = 'Administration';

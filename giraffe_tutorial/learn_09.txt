@@ -1,0 +1,27 @@
+-- Expression
+-- % = any number of characters and _ = one character
+
+-- Find any client's who are an LLC
+SELECT *
+FROM client
+WHERE client_name LIKE '%LLC';
+
+-- Find any brach suppliers who are in the label bussiness
+SELECT *
+FROM branch_supplier
+WHERE supplier_name LIKE '%Labels%';
+
+-- Find employee starts with J
+SELECT *
+FROM employee
+WHERE first_name LIKE 'J%';
+
+-- Find any employee born in October
+SELECT *
+FROM employee
+WHERE birth_date LIKE '%02%';
+
+-- Find any client which is a school
+SELECT *
+FROM client
+WHERE client_name LIKE '%school%';

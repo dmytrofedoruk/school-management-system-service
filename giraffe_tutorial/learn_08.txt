@@ -1,0 +1,52 @@
+-- Functions
+
+-- Find the number of employees
+SELECT COUNT(emp_id)
+FROM employee;
+
+-- Find the average salary of employees
+SELECT AVG(salary)
+FROM employee;
+
+-- Find the number of supervisor
+SELECT COUNT(super_id)
+FROM employee;
+
+-- Find the number of employees born after 1970
+SELECT COUNT(emp_id)
+FROM employee
+WHERE sex = 'F' AND birth_date > '1970-01-01';
+
+-- Find the sum of all employee's salaries
+SELECT SUM(salary)
+FROM employee;
+
+-- Find out how many males and females there are
+SELECT COUNT(sex), sex
+FROM employee
+GROUP BY sex;
+
+-- Find out the sum of salaries between male and female
+SELECT COUNT(sex), sex, SUM(salary)
+FROM employee 
+GROUP BY sex;
+
+-- Find the total sales of each salesman
+SELECT emp_id, SUM(total_sales), COUNT(emp_id)
+FROM works_with
+GROUP BY emp_id;
+
+-- Find how much each client spent
+SELECT client_id, SUM(total_sales)
+FROM works_with
+GROUP BY client_id;
+
+-- Find out the average salaries from each branch_id
+SELECT branch_id, COUNT(emp_id), AVG(salary), SUM(salary)
+FROM employee
+GROUP BY branch_id;
+
+-- Find out the average salaries from each branch_id and super_id
+SELECT branch_id, super_id, COUNT(emp_id), AVG(salary), SUM(salary)
+FROM employee
+GROUP BY branch_id, super_id;

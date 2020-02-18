@@ -1,0 +1,51 @@
+-- Selecting Entries
+
+SELECT * 
+FROM student;
+
+SELECT name, major
+FROM student;
+
+SELECT student.name, student.major
+FROM student;
+
+SELECT student.name, student.major
+FROM student
+ORDER BY name;
+
+SELECT student.name, student.major
+FROM student
+ORDER BY name DESC;
+
+SELECT student.name, student.major
+FROM student
+ORDER BY student_id DESC;
+
+SELECT student.name, student.major
+FROM student
+ORDER BY major, student_id;
+
+SELECT student.name, student.major
+FROM student
+ORDER BY name
+LIMIT 2;
+
+SELECT *
+FROM student
+WHERE major = 'Biology';
+
+SELECT *
+FROM student
+WHERE gpa >= 3.5;
+
+SELECT *
+FROM student
+WHERE name IN ('Richard', 'Saskia', 'Sekar');
+
+SELECT * 
+FROM student
+WHERE major IN ('Mathematics', 'Administration');
+
+SELECT *
+FROM student
+WHERE major IN ('Mathematics', 'Administration') AND gpa >= 3.5;

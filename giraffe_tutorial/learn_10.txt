@@ -1,0 +1,27 @@
+-- Union
+
+-- Find a list of employee and branch names
+-- This is how we do this wrongly
+SELECT first_name AS Company_Names
+FROM employee
+UNION
+SELECT branch_name
+FROM branch
+UNION
+SELECT client_name
+FROM client;
+-- MUST HAVE THE SAME NUMBER OF COLUMN AND THE SAME TYPE
+
+-- The join between client and branch supplier
+SELECT client.branch_id, client_name
+FROM client
+UNION
+SELECT branch_supplier.branch_id, supplier_name
+FROM branch_supplier;
+
+-- Find the list of all money spent or earned by the company
+SELECT salary
+FROM employee
+UNION
+SELECT total_sales
+FROM works_with;
