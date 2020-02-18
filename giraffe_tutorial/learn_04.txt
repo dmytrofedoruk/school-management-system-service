@@ -40,7 +40,7 @@ WHERE gpa >= 3.5;
 
 SELECT *
 FROM student
-WHERE name IN ('Richard', 'Saskia', 'Sekar');
+WHERE name IN ('Richard', 'Meredith', 'Joe');
 
 SELECT * 
 FROM student
