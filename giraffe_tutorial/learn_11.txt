@@ -1,0 +1,31 @@
+-- Joins
+
+INSERT INTO branch VALUES(4, 'Buffalo', NULL, NULL);
+
+SELECT * FROM branch;
+
+
+-- Find all branches and the names of their managers with their salary (inner join)
+SELECT employee.emp_id, employee.first_name, branch.branch_name, employee.salary
+FROM employee
+JOIN branch
+ON employee.emp_id = branch.mgr_id;
+
+-- Find all branches and the names of their managers with their salary (left join)
+SELECT employee.emp_id, employee.first_name, branch.branch_name, employee.salary
+FROM employee
+LEFT JOIN branch
+ON employee.emp_id = branch.mgr_id;
+
+-- Find all branches and the names of their managers with their salary (right join)
+SELECT employee.emp_id, employee.first_name, branch.branch_name, employee.salary
+FROM employee
+RIGHT JOIN branch
+ON employee.emp_id = branch.mgr_id;
+
+-- Find out the relationship between salary and their total_sales
+SELECT employee.first_name, employee.salary, SUM(works_with.total_sales)
+FROM employee
+JOIN works_with
+ON employee.emp_id = works_with.emp_id
+GROUP BY employee.emp_id;
