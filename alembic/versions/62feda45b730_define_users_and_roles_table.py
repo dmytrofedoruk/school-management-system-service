@@ -1,8 +1,8 @@
-"""Defining users and roles table
+"""Define users and roles table
 
-Revision ID: a45caf9d9462
+Revision ID: 62feda45b730
 Revises: 
-Create Date: 2021-02-26 09:56:45.086268
+Create Date: 2021-02-28 09:32:27.280064
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'a45caf9d9462'
+revision = '62feda45b730'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -31,6 +31,8 @@ def upgrade():
     sa.Column('password', sa.String(length=256), nullable=True),
     sa.Column('username', sa.String(length=64), nullable=True),
     sa.Column('fullname', sa.String(length=128), nullable=True),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('modified_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.Column('role_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['role_id'], ['roles.id'], name='fk_user_role'),
     sa.PrimaryKeyConstraint('id'),
