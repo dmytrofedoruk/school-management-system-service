@@ -1,11 +1,8 @@
-import os
 import sqlalchemy
-from dotenv import load_dotenv
 from databases import Database
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-load_dotenv(os.path.join(BASE_DIR, '.env'))
+from .config import Envs
 
-db = Database(os.getenv('DATABASE_URL'))
+db = Database(Envs.DATABASE_URL)
 
 metadata = sqlalchemy.MetaData()

@@ -10,15 +10,17 @@ class UserRegisterRequest(BaseModel):
     username: Optional[str] = None
     fullname: Optional[str] = None
 
+
 class UserRegisterResponse(BaseModel):
     id: int
-    
+
 
 # ======================= LOGIN SCHEMA =======================
 class UserLoginRequest(BaseModel):
-    email: str
+    email: EmailStr
     password: str
 
+
 class UserLoginResponse(BaseModel):
-    email: str
-    token: str
+    token_type: str
+    access_token: str
