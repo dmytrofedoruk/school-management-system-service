@@ -20,12 +20,16 @@ class User:
     @classmethod
     async def register(cls, user: schemas.UserRegisterRequest) -> schemas.UserRegisterResponse:
         try:
-            user.password = pwd_context.hash(user.password)
+            print('user', user)
+            user.password = cls.pwd_context.hash(user.password)
+            print('user.password', user.password)
             query = cls.users.insert().values(**user.dict())
-            user_id = await cls.db.execute(db)
+            print('query', query)
+            user_id = await cls.db.execute(query)
             new_user_response = schemas.UserRegisterResponse(id=user_id)
             return new_user_response
-        except:
+        except Exception as error:
+            print('error', error)
             raise HTTPException(status_code=400, detail='Email has been registered')
 
 
