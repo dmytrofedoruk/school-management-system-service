@@ -1,5 +1,5 @@
+from jose import jwt
 from typing import Optional
-from jose import jwt, JWTError
 from fastapi import HTTPException
 from datetime import timedelta, datetime
 from passlib.context import CryptContext
@@ -20,12 +20,16 @@ class User:
     @classmethod
     async def register(cls, user: schemas.UserRegisterRequest) -> schemas.UserRegisterResponse:
         try:
-            user.password = pwd_context.hash(user.password)
+            print('user', user)
+            user.password = cls.pwd_context.hash(user.password)
+            print('user.password', user.password)
             query = cls.users.insert().values(**user.dict())
-            user_id = await cls.db.execute(db)
+            print('query', query)
+            user_id = await cls.db.execute(query)
             new_user_response = schemas.UserRegisterResponse(id=user_id)
             return new_user_response
-        except:
+        except Exception as error:
+            print('error', error)
             raise HTTPException(status_code=400, detail='Email has been registered')
 
 
@@ -43,14 +47,13 @@ class User:
     @classmethod
     async def authenticate_user(cls, email: str, password: str):
         try:
-            query = cls.users.select().where(users.c.email == email)
-            user = await cls.db.fetch_one(query)
+            user = await cls.get_user(email)
             verified = cls.pwd_context.verify(password, user.password)
             if verified:
                 return user
             raise HTTPException(status_code=400, detail='Wrong email or password')
-        except:
-            raise HTTPException(status_code=400, detail='User not found')
+        except Exception as error:
+            raise HTTPException(status_code=400, detail='Wrong email or password')
 
 
     @classmethod
@@ -63,4 +66,14 @@ class User:
         to_encode.update({'exp': expire})
         encoded_jwt = jwt.encode(to_encode, Envs.SECRET_KEY, algorithm=Envs.ALGORITHM)
         return encoded_jwt
+
+
+    @classmethod
+    async def get_user(cls, email: str) -> schemas.User:
+        try:
+            query = cls.users.select().where(users.c.email == email)
+            user_record = await cls.db.fetch_one(query)
+            return schemas.User(**user_record)
+        except Exception:
+            raise HTTPException(status_code=400, detail='User not found')
 
