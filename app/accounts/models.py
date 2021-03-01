@@ -38,7 +38,7 @@ class User:
         try:
             authenticated_user = await cls.authenticate_user(user.email, user.password)
             token_expires = timedelta(hours=Envs.ACCESS_TOKEN_EXPIRE_HOURS)
-            jwt_token = cls.create_access_token({'sub': authenticated_user.email}, token_expires)
+            jwt_token = cls.create_access_token({'sub': authenticated_user.get('email')}, token_expires)
             return schemas.UserLoginResponse(token_type='Bearer', access_token=jwt_token)
         except Exception as error:
             raise HTTPException(status_code=400, detail='Wrong email or password')
@@ -49,11 +49,11 @@ class User:
         try:
             query = cls.users.select().where(users.c.email == email)
             user = await cls.db.fetch_one(query)
-            verified = cls.pwd_context.verify(password, user.password)
+            verified = cls.pwd_context.verify(password, user.get('password'))
             if verified:
                 return user
             raise HTTPException(status_code=400, detail='Wrong email or password')
-        except:
+        except Exception as error:
             raise HTTPException(status_code=400, detail='User not found')
 
 

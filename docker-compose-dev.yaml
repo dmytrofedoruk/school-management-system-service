@@ -19,16 +19,16 @@ services:
       - POSTGRES_DB=${SSMS_DB}
     volumes:
       - ssms-db-data-dev:/var/lib/postgresql/data
-  pgadmin-dev:
-    container_name: ssms-pgadmin
-    image: dpage/pgadmin4
-    environment: 
-      - PGADMIN_DEFAULT_EMAIL=${SSMS_PGADMIN_EMAIL}
-      - PGADMIN_DEFAULT_PASSWORD=${SSMS_PGADMIN_PASSWORD}
-    ports: 
-      - "5050:80"
-    depends_on:
-      - db-dev
+  # pgadmin-dev:
+  #   container_name: ssms-pgadmin
+  #   image: dpage/pgadmin4
+  #   environment: 
+  #     - PGADMIN_DEFAULT_EMAIL=${SSMS_PGADMIN_EMAIL}
+  #     - PGADMIN_DEFAULT_PASSWORD=${SSMS_PGADMIN_PASSWORD}
+  #   ports: 
+  #     - "5050:80"
+  #   depends_on:
+  #     - db-dev
 volumes:
   ssms-db-data-dev:
     driver: local
