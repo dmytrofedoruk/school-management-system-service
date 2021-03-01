@@ -1,4 +1,5 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from fastapi.security import OAuth2PasswordRequestForm
 
 from . import schemas
 from .models import User
@@ -11,10 +12,12 @@ async def index():
 
 @account_router.post('/register', response_model=schemas.UserRegisterResponse)
 async def register(user: schemas.UserRegisterRequest):
-    new_user_response = await User.register(user)
-    return new_user_response.dict()
+    response = await User.register(user)
+    return response.dict()
 
 @account_router.post('/login', response_model=schemas.UserLoginResponse)
-async def login(user: schemas.UserLoginRequest):
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = schemas.UserLoginRequest(email=form_data.username, password=form_data.password)
     response = await User.login(user)
     return response.dict()
+

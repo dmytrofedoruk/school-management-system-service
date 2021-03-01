@@ -14,7 +14,7 @@ from ..tables.roles import roles
 class User:
     db = db
     users = users
-    pwd_context = CryptContext(schemes=['bcrypt'], deprecated=['auto'])
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
     @classmethod
@@ -36,14 +36,13 @@ class User:
             token_expires = timedelta(hours=Envs.ACCESS_TOKEN_EXPIRE_HOURS)
             jwt_token = cls.create_access_token({'sub': authenticated_user.email}, token_expires)
             return schemas.UserLoginResponse(token_type='Bearer', access_token=jwt_token)
-        except:
+        except Exception as error:
             raise HTTPException(status_code=400, detail='Wrong email or password')
 
 
     @classmethod
     async def authenticate_user(cls, email: str, password: str):
         try:
-            print('email', email)
             query = cls.users.select().where(users.c.email == email)
             user = await cls.db.fetch_one(query)
             verified = cls.pwd_context.verify(password, user.password)
