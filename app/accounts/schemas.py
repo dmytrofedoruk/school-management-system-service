@@ -1,5 +1,6 @@
-from typing import Optional
+from enum import IntEnum
 from datetime import datetime
+from typing import Optional, List
 from pydantic import BaseModel, EmailStr
 
 
@@ -12,6 +13,11 @@ class User(BaseModel):
     created_at: Optional[datetime] = None
     modified_at: Optional[datetime] = None
 
+class RoleEnum(IntEnum):
+    ADMIN = 1
+    TEACHER = 2
+    STUDENT = 3
+
 
 # ======================= REGISTER SCHEMA =======================
 class UserRegisterRequest(BaseModel):
@@ -19,6 +25,7 @@ class UserRegisterRequest(BaseModel):
     password: str
     username: Optional[str] = None
     fullname: Optional[str] = None
+    role_id: RoleEnum
 
 
 class UserRegisterResponse(BaseModel):
