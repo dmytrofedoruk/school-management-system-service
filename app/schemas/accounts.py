@@ -12,13 +12,14 @@ class User(BaseModel):
     fullname: Optional[str] = None
     created_at: Optional[datetime] = None
     modified_at: Optional[datetime] = None
+    role_id: int
 
 class RoleEnum(IntEnum):
     ADMIN = 1
     FACULTY_DEAN = 2
     HEAD_DEPARTEMENT = 3
-    TEACHER = 2
-    STUDENT = 3
+    TEACHER = 4
+    STUDENT = 5
 
 
 # ======================= REGISTER SCHEMA =======================
@@ -27,7 +28,6 @@ class UserRegisterRequest(BaseModel):
     password: str
     username: Optional[str] = None
     fullname: Optional[str] = None
-    role_id: RoleEnum
 
 
 class UserRegisterResponse(BaseModel):

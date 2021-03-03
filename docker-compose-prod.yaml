@@ -2,7 +2,7 @@ version: "3"
 services:
   app:
     build: .
-    command: bash -c "alembic upgrade head && python main.py"
+    command: bash -c "alembic upgrade head && python manage.py run"
     volumes:
       - "./:/app"
     ports:

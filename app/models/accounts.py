@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 
 from ..tables import users
 from ..config import db, Envs
-from ..schemas import UserSchema, UserRegisterRequest, UserRegisterResponse, UserLoginRequest, UserLoginResponse
+from ..schemas import UserSchema, UserRegisterRequest, UserRegisterResponse, UserLoginRequest, UserLoginResponse, RoleEnum
 
 
 class User:
@@ -19,7 +19,7 @@ class User:
     async def register(cls, user: UserRegisterRequest) -> UserRegisterResponse:
         try:
             user.password = cls.pwd_context.hash(user.password)
-            query = cls.users.insert().values(**user.dict())
+            query = cls.users.insert().values(**user.dict(), role_id=RoleEnum.STUDENT)
             user_id = await cls.db.execute(query)
             new_user_response = UserRegisterResponse(id=user_id)
             return new_user_response
