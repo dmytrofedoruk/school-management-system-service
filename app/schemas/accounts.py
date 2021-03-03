@@ -15,6 +15,8 @@ class User(BaseModel):
 
 class RoleEnum(IntEnum):
     ADMIN = 1
+    FACULTY_DEAN = 2
+    HEAD_DEPARTEMENT = 3
     TEACHER = 2
     STUDENT = 3
 

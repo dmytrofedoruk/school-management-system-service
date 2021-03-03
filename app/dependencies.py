@@ -1,8 +1,8 @@
 from jose import JWTError, jwt
 from fastapi import Header, HTTPException, status
 
-from .config.config import Envs
-from .models.accounts import User
+from .models import UserModel
+from .config import Envs
 
 async def get_user(token: str = Header(...)):
     credentials_exception = HTTPException(
@@ -15,7 +15,7 @@ async def get_user(token: str = Header(...)):
         email: str = payload.get('sub')
         if email is None:
             raise credentials_exception
-        user_found = await User.get_user(email)
+        user_found = await UserModel.get_user(email)
         yield user_found
     except JWTError:
         raise credentials_exception

@@ -10,3 +10,5 @@ if __name__ == '__main__':
         application.run()
     elif main_command == 'admin':
         print('This is an admin command')
+    else:
+        raise ValueError('The command must be either run or admin')

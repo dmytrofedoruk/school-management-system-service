@@ -4,11 +4,9 @@ from fastapi import HTTPException
 from datetime import timedelta, datetime
 from passlib.context import CryptContext
 
-from ..config.db import db
-from ..config.config import Envs
-from ..tables.users import users
-from ..tables.roles import roles
-from ..schemas.accounts import User as UserSchema, UserRegisterRequest, UserRegisterResponse, UserLoginRequest, UserLoginResponse
+from ..tables import users
+from ..config import db, Envs
+from ..schemas import UserSchema, UserRegisterRequest, UserRegisterResponse, UserLoginRequest, UserLoginResponse
 
 
 class User:
