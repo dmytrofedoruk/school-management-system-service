@@ -10,3 +10,5 @@ class Envs:
     SECRET_KEY = os.getenv('SECRET_KEY')
     ALGORITHM = os.getenv('ALGORITHM')
     ACCESS_TOKEN_EXPIRE_HOURS = int(os.getenv('ACCESS_TOKEN_EXPIRE_HOURS'))
+    HOST = os.getenv('HOST')
+    PORT = int(os.getenv('PORT'))
