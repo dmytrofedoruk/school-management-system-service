@@ -9,7 +9,6 @@ from app.routers.accounts import account_router
 # Application instantiation
 app = FastAPI(title='School System Management Service')
 
-
 # Seteup database connection and termination
 @app.on_event('startup')
 async def startup():
@@ -28,6 +27,6 @@ app.include_router(account_router)
 def root():
     return {'Welcome to school system application version: 0.0.1'}
 
-
-if __name__ == '__main__':
-    uvicorn.run('main:app', host=Envs.HOST, port=Envs.PORT, reload=True)
+# running the service from manage.py file
+def run():
+    uvicorn.run('app.main:app', host=Envs.HOST, port=Envs.PORT, reload=True if Envs.ENVIRONMENT == 'development' else False)
