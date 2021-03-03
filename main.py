@@ -3,7 +3,7 @@ from fastapi import FastAPI
 
 from app.config.db import db
 from app.config.config import Envs
-from app.accounts.routers import account_router
+from app.routers.accounts import account_router
 
 
 # Application instantiation
@@ -30,4 +30,4 @@ def root():
 
 
 if __name__ == '__main__':
-    uvicorn.run(app, host=Envs.HOST, port=Envs.PORT, reload=True)
+    uvicorn.run('main:app', host=Envs.HOST, port=Envs.PORT, reload=True)

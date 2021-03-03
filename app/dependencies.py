@@ -1,8 +1,8 @@
 from jose import JWTError, jwt
 from fastapi import Header, HTTPException, status
 
-from .models import User
-from ..config.config import Envs
+from .config.config import Envs
+from .models.accounts import User
 
 async def get_user(token: str = Header(...)):
     credentials_exception = HTTPException(

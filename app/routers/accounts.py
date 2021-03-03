@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
-from . import schemas
-from .models import User
-from .dependencies import get_user
+from ..models.accounts import User
+from ..schemas import accounts as schemas
+from ..dependencies import get_user
 
 
 account_router = APIRouter(prefix='/accounts', tags=['accounts'])

@@ -4,11 +4,11 @@ from fastapi import HTTPException
 from datetime import timedelta, datetime
 from passlib.context import CryptContext
 
-from . import schemas
 from ..config.db import db
 from ..config.config import Envs
 from ..tables.users import users
 from ..tables.roles import roles
+from ..schemas.accounts import User as UserSchema, UserRegisterRequest, UserRegisterResponse, UserLoginRequest, UserLoginResponse
 
 
 class User:
@@ -18,28 +18,24 @@ class User:
 
 
     @classmethod
-    async def register(cls, user: schemas.UserRegisterRequest) -> schemas.UserRegisterResponse:
+    async def register(cls, user: UserRegisterRequest) -> UserRegisterResponse:
         try:
-            print('user', user)
             user.password = cls.pwd_context.hash(user.password)
-            print('user.password', user.password)
             query = cls.users.insert().values(**user.dict())
-            print('query', query)
             user_id = await cls.db.execute(query)
-            new_user_response = schemas.UserRegisterResponse(id=user_id)
+            new_user_response = UserRegisterResponse(id=user_id)
             return new_user_response
         except Exception as error:
-            print('error', error)
             raise HTTPException(status_code=400, detail='Email has been registered')
 
 
     @classmethod
-    async def login(cls, user: schemas.UserLoginRequest) -> schemas.UserLoginResponse:
+    async def login(cls, user: UserLoginRequest) -> UserLoginResponse:
         try:
             authenticated_user = await cls.authenticate_user(user.email, user.password)
             token_expires = timedelta(hours=Envs.ACCESS_TOKEN_EXPIRE_HOURS)
             jwt_token = cls.create_access_token({'sub': authenticated_user.email}, token_expires)
-            return schemas.UserLoginResponse(token_type='Bearer', access_token=jwt_token)
+            return UserLoginResponse(token_type='Bearer', access_token=jwt_token)
         except Exception as error:
             raise HTTPException(status_code=400, detail='Wrong email or password')
 
@@ -69,11 +65,11 @@ class User:
 
 
     @classmethod
-    async def get_user(cls, email: str) -> schemas.User:
+    async def get_user(cls, email: str) -> UserSchema:
         try:
             query = cls.users.select().where(users.c.email == email)
             user_record = await cls.db.fetch_one(query)
-            return schemas.User(**user_record)
-        except Exception:
+            return UserSchema(**user_record)
+        except Exception as error:
             raise HTTPException(status_code=400, detail='User not found')
 
