@@ -1,11 +1,11 @@
 import sqlalchemy
-from datetime import datetime
+from datetime import datetime 
 
 from ..config.db import db, metadata
 
 
-classrooms = sqlalchemy.Table(
-    'classrooms',
+faculties = sqlalchemy.Table(
+    'faculties',
     metadata,
     sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True),
     sqlalchemy.Column('name', sqlalchemy.String(128), unique=True),
@@ -13,17 +13,18 @@ classrooms = sqlalchemy.Table(
     sqlalchemy.Column('created_at', sqlalchemy.DateTime, server_default=sqlalchemy.func.now()),
     sqlalchemy.Column('modified_at', sqlalchemy.DateTime, server_default=sqlalchemy.func.now(), onupdate=sqlalchemy.func.now()),
 
-    sqlalchemy.Column('teacher_id', sqlalchemy.Integer),
+    # foreign key(s)
+    sqlalchemy.Column('dean_id', sqlalchemy.Integer),
     sqlalchemy.ForeignKeyConstraint(
-        ['teacher_id'], ['users.id'],
-        name='fk_classroom_owner'
+        ['dean_id'], ['users.id'],
+        name='fk_faculty_dean'
     )
 )
 
-students_classrooms = sqlalchemy.Table(
-    'students_classrooms',
+students_faculties = sqlalchemy.Table(
+    'students_faculties',
     metadata,
     sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True),
-    sqlalchemy.Column('classroom_id', sqlalchemy.Integer, sqlalchemy.ForeignKey('classrooms.id')),
-    sqlalchemy.Column('student_id', sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id')),
+    sqlalchemy.Column('faculty_id', sqlalchemy.Integer, sqlalchemy.ForeignKey('faculties.id')),
+    sqlalchemy.Column('student_id', sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'))
 )

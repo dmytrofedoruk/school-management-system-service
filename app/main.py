@@ -3,7 +3,7 @@ from fastapi import FastAPI
 
 from app.config.db import db
 from app.config.config import Envs
-from app.routers import account_router, classroom_router
+from app.routers import account_router, classroom_router, departement_router
 
 
 # Application instantiation
@@ -21,6 +21,7 @@ async def shutdown():
 # Registering routers
 app.include_router(account_router)
 app.include_router(classroom_router)
+app.include_router(departement_router)
 
 
 # Root path operation function

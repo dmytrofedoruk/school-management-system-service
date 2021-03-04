@@ -27,7 +27,7 @@ if __name__ == '__main__':
             )
             create_admin(user_admin)
         elif args.main_command == 'create-migrations':
-            os.sytem(f'alembic revision --autogenerate -m "{args.comment}"')
+            os.system(f'alembic revision --autogenerate -m "{args.comment}"')
         elif args.main_command == 'migrate':
             os.system('alembic upgrade head')
         else:

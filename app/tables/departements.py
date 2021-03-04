@@ -14,10 +14,10 @@ departements = sqlalchemy.Table(
     sqlalchemy.Column('modified_at', sqlalchemy.DateTime, server_default=sqlalchemy.func.now(), onupdate=sqlalchemy.func.now()),
 
     # foreign key(s)
-    sqlalchemy.Column('dean_id', sqlalchemy.Integer),
+    sqlalchemy.Column('head_id', sqlalchemy.Integer),
     sqlalchemy.ForeignKeyConstraint(
-        ['dean_id'], ['users.id'],
-        name='fk_departement_dean'
+        ['head_id'], ['users.id'],
+        name='fk_departement_head'
     )
 )
 
