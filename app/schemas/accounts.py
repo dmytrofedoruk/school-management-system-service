@@ -1,7 +1,7 @@
 from enum import IntEnum
 from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 
 class User(BaseModel):
@@ -32,6 +32,10 @@ class UserRegisterRequest(BaseModel):
 
 class UserRegisterResponse(BaseModel):
     id: int
+
+
+class UserRegisterWithRole(UserRegisterRequest):
+    role_id: RoleEnum
 
 
 # ======================= LOGIN SCHEMA =======================
