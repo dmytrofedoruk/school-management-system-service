@@ -14,7 +14,7 @@ faculties = sqlalchemy.Table(
     sqlalchemy.Column('modified_at', sqlalchemy.DateTime, server_default=sqlalchemy.func.now(), onupdate=sqlalchemy.func.now()),
 
     # foreign key(s)
-    sqlalchemy.Column('dean_id', sqlalchemy.Integer),
+    sqlalchemy.Column('dean_id', sqlalchemy.Integer, unique=True),
     sqlalchemy.ForeignKeyConstraint(
         ['dean_id'], ['users.id'],
         name='fk_faculty_dean'

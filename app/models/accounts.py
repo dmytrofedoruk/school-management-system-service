@@ -65,9 +65,13 @@ class User:
     @classmethod
     async def get_user(cls, email: str) -> UserSchema:
         try:
-            query = cls.users.select().where(users.c.email == email)
+            query = cls.users.select().where(cls.users.c.email == email)
             user_record = await cls.db.fetch_one(query)
             return UserSchema(**user_record)
         except Exception as error:
             raise HTTPException(status_code=400, detail='User not found')
+
+
+class Role:
+    roles_list = [RoleEnum.ADMIN, RoleEnum.FACULTY_DEAN, RoleEnum.HEAD_DEPARTEMENT, RoleEnum.TEACHER, RoleEnum.STUDENT]
 
