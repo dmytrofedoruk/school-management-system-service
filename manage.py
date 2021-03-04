@@ -30,6 +30,8 @@ if __name__ == '__main__':
             os.system(f'alembic revision --autogenerate -m "{args.comment}"')
         elif args.main_command == 'migrate':
             os.system('alembic upgrade head')
+        elif args.main_command == 'rollback':
+            os.system('alembic downgrade head')
         else:
             raise ValueError('The command must be either run or admin')
     except:

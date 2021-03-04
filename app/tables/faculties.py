@@ -28,3 +28,11 @@ students_faculties = sqlalchemy.Table(
     sqlalchemy.Column('faculty_id', sqlalchemy.Integer, sqlalchemy.ForeignKey('faculties.id')),
     sqlalchemy.Column('student_id', sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'))
 )
+
+teachers_faculties = sqlalchemy.Table(
+    'teachers_faculties',
+    metadata,
+    sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column('faculty_id', sqlalchemy.Integer, sqlalchemy.ForeignKey('faculties.id')),
+    sqlalchemy.Column('teacher_id', sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'))
+)
