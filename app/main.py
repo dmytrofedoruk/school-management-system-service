@@ -1,13 +1,13 @@
 import uvicorn
 from fastapi import FastAPI
 
-from .config.db import db
-from .accounts.routers import account_router
+from app.config.db import db
+from app.config.config import Envs
+from app.routers import account_router, classroom_router, departement_router
 
 
 # Application instantiation
 app = FastAPI(title='School System Management Service')
-
 
 # Seteup database connection and termination
 @app.on_event('startup')
@@ -20,6 +20,8 @@ async def shutdown():
 
 # Registering routers
 app.include_router(account_router)
+app.include_router(classroom_router)
+app.include_router(departement_router)
 
 
 # Root path operation function
@@ -27,6 +29,6 @@ app.include_router(account_router)
 def root():
     return {'Welcome to school system application version: 0.0.1'}
 
-
-if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=8000)
+# running the service from manage.py file
+def run():
+    uvicorn.run('app.main:app', host=Envs.HOST, port=Envs.PORT, reload=True if Envs.ENVIRONMENT == 'development' else False)
