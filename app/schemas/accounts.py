@@ -1,7 +1,7 @@
 from enum import IntEnum
 from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr
 
 
 class User(BaseModel):

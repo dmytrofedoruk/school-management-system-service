@@ -6,3 +6,7 @@ from .accounts \
         UserRegisterResponse, \
         RoleEnum, \
         UserRegisterWithRole
+
+from .departements \
+    import Departement as DepartementSchema, \
+        CreateDepartementRequest

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from ..models import UserModel
+from ..models import UserModel, RoleModel
 from ..dependencies import get_user
 from ..schemas import UserSchema, UserLoginRequest, UserLoginResponse, UserRegisterRequest, UserRegisterResponse, UserRegisterWithRole, RoleEnum
 
@@ -38,16 +38,15 @@ async def register_with_role(request: UserRegisterWithRole, user: UserSchema = D
     - **fullname**: optional
     - **role_id**: user's role
     """
-    roles_list = [RoleEnum.ADMIN, RoleEnum.FACULTY_DEAN, RoleEnum.HEAD_DEPARTEMENT, RoleEnum.TEACHER, RoleEnum.STUDENT]
-    privilage_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='You are not allowed to create that user')
+    privilage_exception = HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail='You are not allowed to create that user')
 
     if user.role_id == RoleEnum.ADMIN:
         pass
-    elif user.role_id == RoleEnum.FACULTY_DEAN and request.role_id not in roles_list[1:]:
+    elif user.role_id == RoleEnum.FACULTY_DEAN and request.role_id not in RoleModel.roles_list[1:]:
         raise privilage_exception
-    elif user.role_id == RoleEnum.HEAD_DEPARTEMENT and request.role_id not in roles_list[2:]:
+    elif user.role_id == RoleEnum.HEAD_DEPARTEMENT and request.role_id not in RoleModel.roles_list[2:]:
         raise privilage_exception
-    elif user.role_id == RoleEnum.TEACHER and request.role_id not in roles_list[3:]: 
+    elif user.role_id == RoleEnum.TEACHER and request.role_id not in RoleModel.roles_list[3:]: 
         raise privilage_exception
 
     response = await UserModel.register(request)
