@@ -17,6 +17,8 @@ class Departement:
             departement_id = await cls.db.execute(query_insert)
             departement = await cls.get_departement(departement_id)
             return departement
+        except HTTPException as error:
+            raise error
         except Exception as error:
             print('failed to create deparement', error)
             raise HTTPException(status_code=500, detail='Failed to create departement')
@@ -26,7 +28,7 @@ class Departement:
         query = cls.departements.select().where(cls.departements.c.id == departement_id)
         record = await cls.db.fetch_one(query)
         if len(record) == 0:
-            raise HTTPException(status_code=400, detail='Departement not found')
+            raise HTTPException(status_code=404, detail='Departement not found')
         return DepartementSchema(**record)
 
     @classmethod

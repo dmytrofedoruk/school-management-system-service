@@ -22,7 +22,7 @@ async def create_departement(request: CreateDepartementRequest, user: UserSchema
     return response.dict()
 
 @departement_router.get('/get/all', response_model=List[DepartementSchema])
-async def get_departement():
+async def get_all_departements(user: UserSchema = Depends(get_user)):
     response = await DepartementModel.get_all()
     return response
 

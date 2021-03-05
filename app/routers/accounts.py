@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import APIRouter, Depends, HTTPException, status
 
-from ..models import UserModel, RoleModel
 from ..dependencies import get_user
+from ..models import UserModel, RoleModel
 from ..schemas import UserSchema, UserLoginRequest, UserLoginResponse, UserRegisterRequest, UserRegisterResponse, UserRegisterWithRole, RoleEnum
 
 
