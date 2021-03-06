@@ -2,6 +2,7 @@ from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel
 
+
 class Faculty(BaseModel):
     id: int
     name: str
