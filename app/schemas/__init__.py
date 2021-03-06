@@ -10,3 +10,7 @@ from .accounts \
 from .departements \
     import Departement as DepartementSchema, \
         CreateDepartementRequest
+
+from .faculties \
+    import Faculty as FacultySchema, \
+        CreateFacultyRequest
