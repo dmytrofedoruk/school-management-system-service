@@ -34,7 +34,7 @@ class Departement:
     @classmethod
     async def get_all(cls) -> List[DepartementSchema]:
         query = cls.departements.select()
-        record = await cls.db.fetch_all(query)
-        if len(record) == 0:
+        records = await cls.db.fetch_all(query)
+        if len(records) == 0:
             raise HTTPException(status_code=400, detail='Departement not found')
-        return [DepartementSchema(**departement) for departement in record]
+        return [DepartementSchema(**departement) for departement in records]

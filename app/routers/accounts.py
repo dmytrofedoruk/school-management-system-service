@@ -25,7 +25,7 @@ async def register_for_student(request: UserRegisterRequest):
     """
     user = UserRegisterWithRole(**request.dict(), role_id=RoleEnum.STUDENT)
     response = await UserModel.register(user)
-    return response.dict()
+    return response
 
 @account_router.post('/register', response_model=UserRegisterResponse)
 async def register_with_role(request: UserRegisterWithRole, user: UserSchema = Depends(get_user)):
@@ -50,7 +50,7 @@ async def register_with_role(request: UserRegisterWithRole, user: UserSchema = D
         raise privilage_exception
 
     response = await UserModel.register(request)
-    return response.dict()
+    return response
 
 @account_router.post('/login', response_model=UserLoginResponse)
 async def login(user: UserLoginRequest):
@@ -68,4 +68,4 @@ async def get_profile(user: UserSchema = Depends(get_user)):
     """
     Get logged in user's data
     """
-    return user.dict()
+    return user

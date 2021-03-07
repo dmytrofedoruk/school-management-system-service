@@ -14,3 +14,7 @@ from .departements \
 from .faculties \
     import Faculty as FacultySchema, \
         CreateFacultyRequest
+
+from .classrooms \
+    import Classroom as ClassroomSchema, \
+        CreateClassroomRequest
