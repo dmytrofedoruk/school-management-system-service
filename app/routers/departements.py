@@ -19,7 +19,7 @@ async def create_departement(request: CreateDepartementRequest, user: UserSchema
     if user.role_id != RoleEnum.HEAD_DEPARTEMENT:
         raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail='You are not allowed to create departement')
     response = await DepartementModel.create(request, user.id)
-    return response.dict()
+    return response
 
 @departement_router.get('/get/all', response_model=List[DepartementSchema])
 async def get_all_departements(user: UserSchema = Depends(get_user)):
@@ -29,4 +29,4 @@ async def get_all_departements(user: UserSchema = Depends(get_user)):
 @departement_router.get('/get/{departement_id}', response_model=DepartementSchema)
 async def get_departement(departement_id: int, user: UserSchema = Depends(get_user)):
     response = await DepartementModel.get_departement(departement_id)
-    return response.dict()
+    return response
