@@ -4,6 +4,13 @@ from typing import Optional, List
 from pydantic import BaseModel, EmailStr
 
 
+class RoleEnum(IntEnum):
+    ADMIN = 1
+    FACULTY_DEAN = 2
+    HEAD_DEPARTEMENT = 3
+    TEACHER = 4
+    STUDENT = 5
+
 class User(BaseModel):
     id: int
     email: EmailStr
@@ -12,15 +19,7 @@ class User(BaseModel):
     fullname: Optional[str] = None
     created_at: Optional[datetime] = None
     modified_at: Optional[datetime] = None
-    role_id: int
-
-class RoleEnum(IntEnum):
-    ADMIN = 1
-    FACULTY_DEAN = 2
-    HEAD_DEPARTEMENT = 3
-    TEACHER = 4
-    STUDENT = 5
-
+    role_mappings: List[RoleEnum]
 
 # ======================= REGISTER SCHEMA =======================
 class UserRegisterRequest(BaseModel):
@@ -35,10 +34,10 @@ class UserRegisterResponse(BaseModel):
 
 
 class UserRegisterWithRole(UserRegisterRequest):
-    role_id: RoleEnum
+    role_mappings: List[RoleEnum]
 
 
-# ======================= LOGIN SCHEMA =======================
+# ======================= LOGIN SCHEMA =======================\
 class UserLoginRequest(BaseModel):
     email: EmailStr
     password: str

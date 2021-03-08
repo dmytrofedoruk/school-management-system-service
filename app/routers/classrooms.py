@@ -13,7 +13,6 @@ classroom_router = APIRouter(prefix='/classrooms', tags=['classrooms'])
 async def index(user: UserSchema = Depends(get_user)):
     return {'message': 'This is classrooms route index'}
 
-
 @classroom_router.post('/create', response_model=ClassroomSchema)
 async def create_classroom(request: CreateClassroomRequest, user: UserSchema = Depends(get_user)):
     if user.role_id != RoleEnum.TEACHER:

@@ -1,30 +1,50 @@
 from jose import jwt
-from typing import Optional
+from typing import Optional, List
 from fastapi import HTTPException
 from datetime import timedelta, datetime
 from passlib.context import CryptContext
 
-from ..tables import users
+from ..tables import users, users_roles
 from ..config import db, Envs
-from ..schemas import UserSchema, UserRegisterRequest, UserRegisterResponse, UserLoginRequest, UserLoginResponse, RoleEnum
+from ..schemas import UserSchema, UserRegisterRequest, UserRegisterResponse, UserLoginRequest, UserLoginResponse, RoleEnum, UserRegisterWithRole
 
 
 class User:
     db = db
     users = users
+    users_roles = users_roles
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
     @classmethod
-    async def register(cls, user: UserRegisterRequest) -> UserRegisterResponse:
+    async def register(cls, user: UserRegisterRequest, role_mappings: List[RoleEnum]) -> UserRegisterResponse:
+        print('user', user)
+        response: UserRegisterResponse
+        user_id: int
+        transaction = await cls.db.transaction()
         try:
             user.password = cls.pwd_context.hash(user.password)
-            query = cls.users.insert().values(**user.dict())
-            user_id = await cls.db.execute(query)
-            new_user_response = UserRegisterResponse(id=user_id)
-            return new_user_response
+            user_insert = cls.users.insert().values(**user.dict())
+            print('user_insert', user_insert)
+            user_id = await cls.db.execute(user_insert)
+            print('user_id', user_id)
+            for role in role_mappings:
+                print('role', role.value)
+            roles = [{'user_id': user_id, 'role_id': role.value} for role in role_mappings]
+            print('roles', roles)
+            role_insert = cls.users_roles.insert()
+            print('role_insert', role_insert)
+            returned_values = await cls.db.execute_many(query=role_insert, values=roles)
+            print('returned_values', returned_values)
         except Exception as error:
-            raise HTTPException(status_code=400, detail='Email has been registered')
+            print('error', error)
+            await transaction.rollback()
+            raise HTTPException(status_code=500, detail='Failed to register account')
+        else:
+            print('here')
+            await transaction.commit()
+
+        return UserRegisterResponse(id=user_id)
 
 
     @classmethod
