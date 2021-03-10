@@ -23,8 +23,8 @@ async def register_for_student(request: UserRegisterRequest):
     - **username**: optional
     - **fullname**: optional
     """
-    user = UserRegisterWithRole(**request.dict(), role_id=RoleEnum.STUDENT)
-    response = await UserModel.register(user)
+    response = await UserModel.register(request, [RoleEnum.STUDENT])
+    print('response', response)
     return response
 
 @account_router.post('/register', response_model=UserRegisterResponse)
@@ -42,11 +42,11 @@ async def register_with_role(request: UserRegisterWithRole, user: UserSchema = D
 
     if user.role_id == RoleEnum.ADMIN:
         pass
-    elif user.role_id == RoleEnum.FACULTY_DEAN and request.role_id not in RoleModel.roles_list[1:]:
+    elif user.role_id == RoleEnum.FACULTY_DEAN and set(request.role_mappings).issubset(RoleModel.roles_list[1:]):
         raise privilage_exception
-    elif user.role_id == RoleEnum.HEAD_DEPARTEMENT and request.role_id not in RoleModel.roles_list[2:]:
+    elif user.role_id == RoleEnum.HEAD_DEPARTEMENT and set(request.role_mappings).issubset(RoleModel.roles_list[2:]):
         raise privilage_exception
-    elif user.role_id == RoleEnum.TEACHER and request.role_id not in RoleModel.roles_list[3:]: 
+    elif user.role_id == RoleEnum.TEACHER and set(request.role_mappings).issubset(RoleModel.roles_list[3:]): 
         raise privilage_exception
 
     response = await UserModel.register(request)
