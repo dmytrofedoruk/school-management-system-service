@@ -25,9 +25,9 @@ async def register_for_student(request: UserRegisterRequest, background_tasks: B
     - **username**: optional
     - **fullname**: optional
     """
-    await send_email(background_tasks, 'richardagus921@gmail.com',
-                     '<p>Sekardayu Hana Pradiani</p>')
     response = await UserModel.register(request, [RoleEnum.STUDENT])
+    send_email(background_tasks, 'richardagus921@gmail.com',
+               '<p>Sekardayu Hana Pradiani</p>')
     return response
 
 
