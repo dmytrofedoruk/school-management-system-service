@@ -14,7 +14,6 @@ class Faculty:
     async def create(cls, data: CreateFacultyRequest, dean_id: int) -> FacultySchema:
         try:
             query_insert = cls.faculties.insert().values(**data.dict(), dean_id=dean_id)
-            print('query_insert', query_insert)
             faculty_id = await cls.db.execute(query_insert)
             faculty = await cls.get_faculty(faculty_id)
             return faculty
@@ -22,8 +21,8 @@ class Faculty:
             raise error
         except Exception as error:
             await cls.db.rollback()
-            print('Error to create faculties', error)
-            raise HTTPException(status_code=500, detail='Internal server error')
+            raise HTTPException(
+                status_code=500, detail='Internal server error')
 
     @classmethod
     async def get_faculty(cls, faculty_id: int) -> FacultySchema:
