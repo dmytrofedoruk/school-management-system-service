@@ -20,15 +20,16 @@ class Departement:
         except HTTPException as error:
             raise error
         except Exception as error:
-            print('failed to create deparement', error)
-            raise HTTPException(status_code=500, detail='Failed to create departement')
+            raise HTTPException(
+                status_code=500, detail='Failed to create departement')
 
     @classmethod
     async def get_departement(cls, departement_id: int) -> DepartementSchema:
         query = cls.departements.select().where(cls.departements.c.id == departement_id)
         record = await cls.db.fetch_one(query)
         if len(record) == 0:
-            raise HTTPException(status_code=404, detail='Departement not found')
+            raise HTTPException(
+                status_code=404, detail='Departement not found')
         return DepartementSchema(**record)
 
     @classmethod
@@ -36,5 +37,6 @@ class Departement:
         query = cls.departements.select()
         records = await cls.db.fetch_all(query)
         if len(records) == 0:
-            raise HTTPException(status_code=400, detail='Departement not found')
+            raise HTTPException(
+                status_code=400, detail='Departement not found')
         return [DepartementSchema(**departement) for departement in records]

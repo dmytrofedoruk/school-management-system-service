@@ -13,15 +13,16 @@ class Classroom:
     @classmethod
     async def create(cls, data: CreateClassroomRequest, teacher_id: int) -> ClassroomSchema:
         try:
-            query_insert = cls.classrooms.insert().values(**data.dict(), teacher_id=teacher_id)
+            query_insert = cls.classrooms.insert().values(
+                **data.dict(), teacher_id=teacher_id)
             classroom_id = await cls.db.execute(query_insert)
             classroom = await cls.get_classroom(classroom_id)
             return classroom
         except HTTPException as error:
             raise error
         except Exception as error:
-            print('failed to create classroom', error)
-            raise HTTPException(status_code=500, detail='Failed to create classroom')
+            raise HTTPException(
+                status_code=500, detail='Failed to create classroom')
 
     @classmethod
     async def get_classroom(cls, classroom_id: int) -> ClassroomSchema:

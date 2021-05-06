@@ -1,9 +1,12 @@
-import os, sys
+import os
+import sys
 from dotenv import load_dotenv
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+BASE_DIR = os.path.dirname(os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__))))
 load_dotenv(os.path.join(BASE_DIR, '.env.dev'))
 sys.path.append(BASE_DIR)
+
 
 class Envs:
     DATABASE_URL = os.getenv('DATABASE_URL')
@@ -13,3 +16,9 @@ class Envs:
     HOST = os.getenv('HOST')
     PORT = int(os.getenv('PORT'))
     ENVIRONMENT = os.getenv('ENVIRONMENT')
+    MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
+    MAIL_FROM = os.getenv('MAIL_FROM')
+    MAIL_PORT = int(os.getenv('MAIL_PORT'))
+    MAIL_SERVER = os.getenv('MAIL_SERVER')
+    MAIL_FROM_NAME = os.getenv('MAIN_FROM_NAME')
