@@ -2,7 +2,6 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 
 from ..dependencies import get_user
-from ..utils.email import send_email
 from ..models import UserModel, RoleModel
 from ..schemas import UserSchema, UserLoginRequest, UserLoginResponse, UserRegisterRequest, UserRegisterResponse, UserRegisterWithRole, RoleEnum
 
@@ -25,9 +24,7 @@ async def register_for_student(request: UserRegisterRequest, background_tasks: B
     - **username**: optional
     - **fullname**: optional
     """
-    response = await UserModel.register(request, [RoleEnum.STUDENT])
-    send_email(background_tasks, 'richardagus921@gmail.com',
-               '<p>Sekardayu Hana Pradiani</p>')
+    response = await UserModel.register(request, [RoleEnum.STUDENT], background_tasks)
     return response
 
 

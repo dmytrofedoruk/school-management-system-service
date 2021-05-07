@@ -15,6 +15,7 @@ class Envs:
     ACCESS_TOKEN_EXPIRE_HOURS = int(os.getenv('ACCESS_TOKEN_EXPIRE_HOURS'))
     HOST = os.getenv('HOST')
     PORT = int(os.getenv('PORT'))
+    BACKEND_URL = os.getenv('BACKEND_URL')
     ENVIRONMENT = os.getenv('ENVIRONMENT')
     MAIL_USERNAME = os.getenv('MAIL_USERNAME')
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')

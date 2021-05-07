@@ -18,13 +18,13 @@ conf = ConnectionConfig(
 )
 
 
-def send_email(background_tasks: BackgroundTasks, email_to: str, body: str):
+def send_email(background_tasks: BackgroundTasks, email_to: str, validation_url: str):
     try:
         message = MessageSchema(
             subject='Validate your account',
             recipients=[email_to],
             body={
-                'name': 'Saskia Nurul Azhima'
+                'validation_url': validation_url
             },
             subtype='html',
         )

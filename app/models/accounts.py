@@ -2,10 +2,12 @@ from jose import jwt
 from hashlib import md5
 from typing import Optional, List
 from fastapi import HTTPException
+from fastapi import BackgroundTasks
 from datetime import timedelta, datetime
 from passlib.context import CryptContext
 
 from ..config import db, Envs
+from ..utils.email import send_email
 from ..tables import users, users_roles
 from ..schemas import UserSchema, UserRegisterRequest, UserRegisterResponse, UserLoginRequest, UserLoginResponse, RoleEnum, UserRegisterWithRole
 
@@ -17,20 +19,23 @@ class User:
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
     @classmethod
-    async def register(cls, user: UserRegisterRequest, role_mappings: List[RoleEnum]) -> UserRegisterResponse:
+    async def register(cls, user: UserRegisterRequest, role_mappings: List[RoleEnum], background_tasks: BackgroundTasks) -> UserRegisterResponse:
         response: UserRegisterResponse
         user_id: int
         transaction = await cls.db.transaction()
         try:
             user.password = cls.pwd_context.hash(user.password)
-            code = md5(user.email.encode())
+            code = md5(user.email.encode()).hexdigest()
             user_insert = cls.users.insert().values(
-                **user.dict(), code=code.hexdigest())
+                **user.dict(), code=code)
             user_id = await cls.db.execute(user_insert)
             roles = [{'user_id': user_id, 'role_id': role.value}
                      for role in role_mappings]
             role_insert = cls.users_roles.insert()
             returned_values = await cls.db.execute_many(query=role_insert, values=roles)
+            validation_url = f'{Envs.BACKEND_URL}/verify-account?validation_code={code}'
+            send_email(background_tasks,
+                       'richardagus921@gmail.com', validation_url)
         except Exception as error:
             await transaction.rollback()
             raise HTTPException(
