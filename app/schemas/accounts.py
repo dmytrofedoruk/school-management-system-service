@@ -11,10 +11,13 @@ class RoleEnum(IntEnum):
     TEACHER = 4
     STUDENT = 5
 
+
 class User(BaseModel):
     id: int
     email: EmailStr
     password: str
+    code: str = None
+    is_validated: bool
     username: Optional[str] = None
     fullname: Optional[str] = None
     created_at: Optional[datetime] = None
@@ -22,6 +25,8 @@ class User(BaseModel):
     role_mappings: List[RoleEnum]
 
 # ======================= REGISTER SCHEMA =======================
+
+
 class UserRegisterRequest(BaseModel):
     email: EmailStr
     password: str

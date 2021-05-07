@@ -1,11 +1,12 @@
 from jose import jwt
+from hashlib import md5
 from typing import Optional, List
 from fastapi import HTTPException
 from datetime import timedelta, datetime
 from passlib.context import CryptContext
 
-from ..tables import users, users_roles
 from ..config import db, Envs
+from ..tables import users, users_roles
 from ..schemas import UserSchema, UserRegisterRequest, UserRegisterResponse, UserLoginRequest, UserLoginResponse, RoleEnum, UserRegisterWithRole
 
 
@@ -22,7 +23,9 @@ class User:
         transaction = await cls.db.transaction()
         try:
             user.password = cls.pwd_context.hash(user.password)
-            user_insert = cls.users.insert().values(**user.dict())
+            code = md5(user.email.encode())
+            user_insert = cls.users.insert().values(
+                **user.dict(), code=code.hexdigest())
             user_id = await cls.db.execute(user_insert)
             roles = [{'user_id': user_id, 'role_id': role.value}
                      for role in role_mappings]
