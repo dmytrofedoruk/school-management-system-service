@@ -1,15 +1,14 @@
 from jose import jwt
 from hashlib import md5
 from typing import Optional, List
-from fastapi import HTTPException
-from fastapi import BackgroundTasks
 from datetime import timedelta, datetime
 from passlib.context import CryptContext
+from fastapi import HTTPException, status, BackgroundTasks
 
 from ..config import db, Envs
 from ..utils.email import send_email
 from ..tables import users, users_roles
-from ..schemas import UserSchema, UserRegisterRequest, UserRegisterResponse, UserLoginRequest, UserLoginResponse, RoleEnum, UserRegisterWithRole
+from ..schemas import UserSchema, UserRegisterRequest, UserRegisterResponse, UserLoginRequest, UserLoginResponse, RoleEnum, UserRegisterWithRole, UserVerification
 
 
 class User:
@@ -33,13 +32,13 @@ class User:
                      for role in role_mappings]
             role_insert = cls.users_roles.insert()
             returned_values = await cls.db.execute_many(query=role_insert, values=roles)
-            validation_url = f'{Envs.BACKEND_URL}/verify-account?validation_code={code}'
+            validation_url = f'{Envs.BACKEND_URL}/accounts/verify-account?email={user.email}&verification_code={code}'
             send_email(background_tasks,
-                       'richardagus921@gmail.com', validation_url)
+                       user.email, validation_url)
         except Exception as error:
             await transaction.rollback()
             raise HTTPException(
-                status_code=500, detail='Failed to register account')
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Failed to register account')
         else:
             await transaction.commit()
 
@@ -55,7 +54,7 @@ class User:
             return UserLoginResponse(token_type='Bearer', access_token=jwt_token)
         except Exception as error:
             raise HTTPException(
-                status_code=400, detail='Wrong email or password')
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Wrong email or password')
 
     @classmethod
     async def authenticate_user(cls, email: str, password: str):
@@ -65,10 +64,10 @@ class User:
             if verified:
                 return user
             raise HTTPException(
-                status_code=400, detail='Wrong email or password')
+                status_code=status.HTTP_400_BAD_REQUEST, detail='Wrong email or password')
         except Exception as error:
             raise HTTPException(
-                status_code=400, detail='Wrong email or password')
+                status_code=status.HTTP_400_BAD_REQUEST, detail='Wrong email or password')
 
     @classmethod
     def create_access_token(cls, data: dict, expires_delta: Optional[timedelta] = None) -> str:
@@ -89,7 +88,24 @@ class User:
             user_record = await cls.db.fetch_one(query)
             return UserSchema(**user_record)
         except Exception as error:
-            raise HTTPException(status_code=400, detail='User not found')
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail='User not found')
+
+    @classmethod
+    async def verify_account(cls, user_verification_data: UserVerification):
+        try:
+            print('user_verification_data.email', user_verification_data.email)
+            user = await cls.get_user(user_verification_data.email)
+            print('verify user', user)
+            if user.code == user_verification_data.verification_code:
+                return True
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail='Wrong verification code')
+        except HTTPException as error:
+            raise error
+        except Exception as error:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Error to validate account')
 
 
 class Role:

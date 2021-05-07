@@ -51,3 +51,9 @@ class UserLoginRequest(BaseModel):
 class UserLoginResponse(BaseModel):
     token_type: str
     access_token: str
+
+
+# ======================= VERIFICATION SCHEMA =======================\
+class UserVerification(BaseModel):
+    email: EmailStr
+    verification_code: str
