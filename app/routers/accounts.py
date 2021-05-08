@@ -1,6 +1,8 @@
+from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, Response
 
+from ..config import Envs
 from ..dependencies import get_user
 from ..models import UserModel, RoleModel
 from ..schemas import UserSchema, UserLoginRequest, UserLoginResponse, UserRegisterRequest, UserRegisterResponse, UserRegisterWithRole, RoleEnum, UserVerification
@@ -83,4 +85,4 @@ async def verify_account(email: str, verification_code: str):
     user_verification_data = UserVerification(
         email=email, verification_code=verification_code)
     await UserModel.verify_account(user_verification_data)
-    return Response(status_code=status.HTTP_202_ACCEPTED)
+    return RedirectResponse(f'{Envs.FRONTENV_URL}/auth/login')

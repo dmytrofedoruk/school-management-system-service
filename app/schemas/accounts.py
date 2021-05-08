@@ -15,14 +15,13 @@ class RoleEnum(IntEnum):
 class User(BaseModel):
     id: int
     email: EmailStr
-    password: str
     code: str = None
     is_validated: bool
     username: Optional[str] = None
     fullname: Optional[str] = None
     created_at: Optional[datetime] = None
     modified_at: Optional[datetime] = None
-    role_mappings: List[RoleEnum]
+    role_mappings: Optional[List] = None
 
 # ======================= REGISTER SCHEMA =======================
 

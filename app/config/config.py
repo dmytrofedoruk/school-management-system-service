@@ -16,6 +16,7 @@ class Envs:
     HOST = os.getenv('HOST')
     PORT = int(os.getenv('PORT'))
     BACKEND_URL = os.getenv('BACKEND_URL')
+    FRONTENV_URL = os.getenv('FRONTEND_URL')
     ENVIRONMENT = os.getenv('ENVIRONMENT')
     MAIL_USERNAME = os.getenv('MAIL_USERNAME')
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
