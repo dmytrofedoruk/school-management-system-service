@@ -11,17 +11,21 @@ class RoleEnum(IntEnum):
     TEACHER = 4
     STUDENT = 5
 
+
 class User(BaseModel):
     id: int
     email: EmailStr
-    password: str
+    code: str = None
+    is_validated: bool
     username: Optional[str] = None
     fullname: Optional[str] = None
     created_at: Optional[datetime] = None
     modified_at: Optional[datetime] = None
-    role_mappings: List[RoleEnum]
+    role_mappings: Optional[List] = None
 
 # ======================= REGISTER SCHEMA =======================
+
+
 class UserRegisterRequest(BaseModel):
     email: EmailStr
     password: str
@@ -46,3 +50,9 @@ class UserLoginRequest(BaseModel):
 class UserLoginResponse(BaseModel):
     token_type: str
     access_token: str
+
+
+# ======================= VERIFICATION SCHEMA =======================\
+class UserVerification(BaseModel):
+    email: EmailStr
+    verification_code: str

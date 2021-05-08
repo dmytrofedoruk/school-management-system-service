@@ -1,10 +1,11 @@
+from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, Response
 
+from ..config import Envs
 from ..dependencies import get_user
-from ..utils.email import send_email
 from ..models import UserModel, RoleModel
-from ..schemas import UserSchema, UserLoginRequest, UserLoginResponse, UserRegisterRequest, UserRegisterResponse, UserRegisterWithRole, RoleEnum
+from ..schemas import UserSchema, UserLoginRequest, UserLoginResponse, UserRegisterRequest, UserRegisterResponse, UserRegisterWithRole, RoleEnum, UserVerification
 
 
 account_router = APIRouter(prefix='/accounts', tags=['accounts'])
@@ -25,9 +26,7 @@ async def register_for_student(request: UserRegisterRequest, background_tasks: B
     - **username**: optional
     - **fullname**: optional
     """
-    response = await UserModel.register(request, [RoleEnum.STUDENT])
-    send_email(background_tasks, 'richardagus921@gmail.com',
-               '<p>Sekardayu Hana Pradiani</p>')
+    response = await UserModel.register(request, [RoleEnum.STUDENT], background_tasks)
     return response
 
 
@@ -76,3 +75,14 @@ async def get_profile(user: UserSchema = Depends(get_user)):
     Get logged in user's data
     """
     return user
+
+
+@account_router.get('/verify-account')
+async def verify_account(email: str, verification_code: str):
+    """
+    Verify account
+    """
+    user_verification_data = UserVerification(
+        email=email, verification_code=verification_code)
+    await UserModel.verify_account(user_verification_data)
+    return RedirectResponse(f'{Envs.FRONTENV_URL}/auth/login')

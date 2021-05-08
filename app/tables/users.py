@@ -14,6 +14,7 @@ users = sqlalchemy.Table(
     sqlalchemy.Column('fullname', sqlalchemy.String(128), nullable=True),
     sqlalchemy.Column('is_validated', sqlalchemy.Boolean, nullable=False,
                       server_default=expression.false()),
+    sqlalchemy.Column('code', sqlalchemy.String(256), nullable=True),
     sqlalchemy.Column('created_at', sqlalchemy.DateTime,
                       server_default=sqlalchemy.func.now()),
     sqlalchemy.Column('modified_at', sqlalchemy.DateTime,

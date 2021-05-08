@@ -1,20 +1,21 @@
 from .accounts \
     import User as UserSchema, \
-        UserLoginRequest, \
-        UserLoginResponse, \
-        UserRegisterRequest, \
-        UserRegisterResponse, \
-        RoleEnum, \
-        UserRegisterWithRole
+    UserLoginRequest, \
+    UserLoginResponse, \
+    UserRegisterRequest, \
+    UserRegisterResponse, \
+    RoleEnum, \
+    UserRegisterWithRole, \
+    UserVerification
 
 from .departements \
     import Departement as DepartementSchema, \
-        CreateDepartementRequest
+    CreateDepartementRequest
 
 from .faculties \
     import Faculty as FacultySchema, \
-        CreateFacultyRequest
+    CreateFacultyRequest
 
 from .classrooms \
     import Classroom as ClassroomSchema, \
-        CreateClassroomRequest
+    CreateClassroomRequest
