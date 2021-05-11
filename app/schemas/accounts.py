@@ -1,6 +1,6 @@
 from enum import IntEnum
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Union
 from pydantic import BaseModel, EmailStr
 
 
@@ -56,3 +56,13 @@ class UserLoginResponse(BaseModel):
 class UserVerification(BaseModel):
     email: EmailStr
     verification_code: str
+
+
+# ======================= RESEND EMAIL SCHEMA =======================\
+class ResendEmailRequest(BaseModel):
+    email: EmailStr
+
+
+class ResendEmailResponse(BaseModel):
+    success: bool
+    data: Union[dict, list]

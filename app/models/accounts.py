@@ -119,6 +119,17 @@ class User:
         else:
             await transaction.commit()
 
+    @classmethod
+    async def resend_email(cls, email: str, background_tasks: BackgroundTasks):
+        try:
+            user = await cls.get_user(email)
+            validation_url = f'{Envs.BACKEND_URL}/accounts/verify-account?email={user.email}&verification_code={user.code}'
+            send_email(background_tasks,
+                       user.email, validation_url)
+        except Exception as error:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Error to resend email')
+
 
 class Role:
     roles_list = [RoleEnum.ADMIN, RoleEnum.FACULTY_DEAN,

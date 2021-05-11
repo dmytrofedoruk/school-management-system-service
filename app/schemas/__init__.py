@@ -1,12 +1,14 @@
 from .accounts \
     import User as UserSchema, \
+    RoleEnum, \
+    UserVerification, \
     UserLoginRequest, \
     UserLoginResponse, \
+    ResendEmailRequest, \
+    ResendEmailResponse, \
     UserRegisterRequest, \
     UserRegisterResponse, \
-    RoleEnum, \
-    UserRegisterWithRole, \
-    UserVerification
+    UserRegisterWithRole
 
 from .departements \
     import Departement as DepartementSchema, \
