@@ -14,21 +14,25 @@ from app.routers import account_router, \
 app = FastAPI(title='School System Management Service')
 
 origins = [
-    "http://localhost:8080",
+    'http://localhost:8080',
+    'http://0.0.0.0:8080',
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=['*'],
+    allow_headers=['*'],
 )
 
 # Seteup database connection and termination
+
+
 @app.on_event('startup')
 async def startup():
     await db.connect()
+
 
 @app.on_event('shutdown')
 async def shutdown():
@@ -47,5 +51,8 @@ def root():
     return {'Welcome to school system application version: 0.0.1'}
 
 # running the service from manage.py file
+
+
 def run():
-    uvicorn.run('app.main:app', host=Envs.HOST, port=Envs.PORT, reload=True if Envs.ENVIRONMENT == 'development' else False)
+    uvicorn.run('app.main:app', host=Envs.HOST, port=Envs.PORT,
+                reload=True if Envs.ENVIRONMENT == 'development' else False)

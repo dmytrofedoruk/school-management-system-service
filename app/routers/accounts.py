@@ -5,7 +5,17 @@ from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, 
 from ..config import Envs
 from ..dependencies import get_user
 from ..models import UserModel, RoleModel
-from ..schemas import UserSchema, UserLoginRequest, UserLoginResponse, UserRegisterRequest, UserRegisterResponse, UserRegisterWithRole, RoleEnum, UserVerification
+from ..schemas import \
+    RoleEnum, \
+    UserSchema, \
+    UserVerification, \
+    UserLoginRequest, \
+    UserLoginResponse, \
+    ResendEmailRequest, \
+    ResendEmailResponse, \
+    UserRegisterRequest, \
+    UserRegisterResponse, \
+    UserRegisterWithRole
 
 
 account_router = APIRouter(prefix='/accounts', tags=['accounts'])
@@ -79,10 +89,13 @@ async def get_profile(user: UserSchema = Depends(get_user)):
 
 @account_router.get('/verify-account')
 async def verify_account(email: str, verification_code: str):
-    """
-    Verify account
-    """
     user_verification_data = UserVerification(
         email=email, verification_code=verification_code)
     await UserModel.verify_account(user_verification_data)
     return RedirectResponse(f'{Envs.FRONTENV_URL}/auth/login')
+
+
+@account_router.post('/resend-email')
+async def resend_email(request: ResendEmailRequest, background_tasks: BackgroundTasks):
+    await UserModel.resend_email(request.email, background_tasks)
+    return ResendEmailResponse(success=True, data={})
