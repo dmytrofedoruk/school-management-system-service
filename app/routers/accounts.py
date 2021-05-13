@@ -15,7 +15,11 @@ from ..schemas import \
     ResendEmailResponse, \
     UserRegisterRequest, \
     UserRegisterResponse, \
-    UserRegisterWithRole
+    UserRegisterWithRole, \
+    ForgotPasswordRequest, \
+    ForgotPasswordResponse, \
+    ChangePasswordRequest, \
+    ChangePasswordResponse
 
 
 account_router = APIRouter(prefix='/accounts', tags=['accounts'])
@@ -92,10 +96,22 @@ async def verify_account(email: str, verification_code: str):
     user_verification_data = UserVerification(
         email=email, verification_code=verification_code)
     await UserModel.verify_account(user_verification_data)
-    return RedirectResponse(f'{Envs.FRONTENV_URL}/auth/login')
+    return RedirectResponse(f'{Envs.FRONTEND_URL}/auth/login')
 
 
 @account_router.post('/resend-email')
 async def resend_email(request: ResendEmailRequest, background_tasks: BackgroundTasks):
     await UserModel.resend_email(request.email, background_tasks)
     return ResendEmailResponse(success=True, data={})
+
+
+@account_router.post('/forgot-password')
+async def forgot_password(request: ForgotPasswordRequest, background_tasks: BackgroundTasks):
+    await UserModel.ask_change_password(request.email, background_tasks)
+    return ForgotPasswordResponse(success=True, data={})
+
+
+@account_router.post('/change-password')
+async def change_password(request: ChangePasswordRequest, email: str, verification_code: str):
+    await UserModel.change_password(request, email, verification_code)
+    return ChangePasswordResponse(success=True, data={})

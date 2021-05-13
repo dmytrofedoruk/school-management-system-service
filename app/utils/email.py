@@ -18,13 +18,25 @@ conf = ConnectionConfig(
 )
 
 
-def send_email(background_tasks: BackgroundTasks, email_to: str, validation_url: str):
+class BodyEmail(BaseModel):
+    validation_url: str
+    title: str
+    h3: str
+    p: str
+    button_title: str
+
+
+def send_email(background_tasks: BackgroundTasks, email_to: str, email_subject: str, body: BodyEmail):
     try:
         message = MessageSchema(
-            subject='Validate your account',
+            subject=email_subject,
             recipients=[email_to],
             body={
-                'validation_url': validation_url
+                'validation_url': body.validation_url,
+                'title': body.title,
+                'p': body.p,
+                'h3': body.h3,
+                'button_title': body.button_title
             },
             subtype='html',
         )

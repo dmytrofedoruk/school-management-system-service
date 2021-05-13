@@ -8,7 +8,11 @@ from .accounts \
     ResendEmailResponse, \
     UserRegisterRequest, \
     UserRegisterResponse, \
-    UserRegisterWithRole
+    UserRegisterWithRole, \
+    ForgotPasswordRequest, \
+    ForgotPasswordResponse, \
+    ChangePasswordRequest, \
+    ChangePasswordResponse
 
 from .departements \
     import Departement as DepartementSchema, \
