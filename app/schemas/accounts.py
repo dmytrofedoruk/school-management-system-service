@@ -15,6 +15,7 @@ class RoleEnum(IntEnum):
 class User(BaseModel):
     id: int
     email: EmailStr
+    password: str
     code: str = None
     is_validated: bool
     username: Optional[str] = None
@@ -64,5 +65,26 @@ class ResendEmailRequest(BaseModel):
 
 
 class ResendEmailResponse(BaseModel):
+    success: bool
+    data: Union[dict, list]
+
+
+# ======================= FORGOT PASSWORD SCHEMA =======================\
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ForgotPasswordResponse(BaseModel):
+    success: bool
+    data: Union[dict, list]
+
+# ======================= CHANGE PASSWORD SCHEMA =======================\
+
+
+class ChangePasswordRequest(BaseModel):
+    password: str
+
+
+class ChangePasswordResponse(BaseModel):
     success: bool
     data: Union[dict, list]
