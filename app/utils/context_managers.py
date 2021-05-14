@@ -11,11 +11,9 @@ def transaction(db):
             try:
                 result = await func(*args, **kwargs)
             except HTTPException as error:
-                print('error', error)
                 await transaction.rollback()
                 raise error
             except Exception as error:
-                print('error', error)
                 await transaction.rollback()
                 raise HTTPException(
                     status.HTTP_500_INTERNAL_SERVER_ERROR, detail='INTERNAL SERVER ERROR')
