@@ -1,3 +1,6 @@
+from typing import Union
+from pydantic import BaseModel
+
 from .accounts \
     import User as UserSchema, \
     RoleEnum, \
@@ -25,3 +28,9 @@ from .faculties \
 from .classrooms \
     import Classroom as ClassroomSchema, \
     CreateClassroomRequest
+
+
+class Response(BaseModel):
+    success: bool
+    message: str
+    data: Union[dict, list]

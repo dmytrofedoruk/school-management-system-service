@@ -7,8 +7,9 @@ from sqlalchemy.sql import select, update
 from fastapi import HTTPException, status, BackgroundTasks
 
 from ..config import db, Envs
-from ..utils.email import send_email, BodyEmail
 from ..tables import users, users_roles, roles
+from ..utils.email import send_email, BodyEmail
+from ..utils.context_managers import transaction
 from ..schemas import UserSchema, UserRegisterRequest, UserRegisterResponse, UserLoginRequest, UserLoginResponse, RoleEnum, UserRegisterWithRole, UserVerification, ChangePasswordRequest
 
 
@@ -20,37 +21,27 @@ class User:
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
     @classmethod
+    @transaction(db)
     async def register(cls, user: UserRegisterRequest, role_mappings: List[RoleEnum], background_tasks: BackgroundTasks) -> UserRegisterResponse:
-        response: UserRegisterResponse
-        user_id: int
-        transaction = await cls.db.transaction()
-        try:
-            user.password = cls.pwd_context.hash(user.password)
-            code = str(uuid4())
-            user_insert = cls.users.insert().values(
-                **user.dict(), code=code)
-            user_id = await cls.db.execute(user_insert)
-            roles = [{'user_id': user_id, 'role_id': role.value}
-                     for role in role_mappings]
-            role_insert = cls.users_roles.insert()
-            returned_values = await cls.db.execute_many(query=role_insert, values=roles)
-            validation_url = f'{Envs.BACKEND_URL}/accounts/verify-account?email={user.email}&verification_code={code}'
-            body_email = BodyEmail(
-                validation_url=validation_url,
-                title='Validate Account on School Management System',
-                h3='Thank you for registering!',
-                p='Click this button to validate and login to your account',
-                button_title='Validate'
-            )
-            send_email(background_tasks,
-                       user.email, 'Validate your account', body_email)
-        except Exception as error:
-            await transaction.rollback()
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Failed to register account')
-        else:
-            await transaction.commit()
-
+        user.password = cls.pwd_context.hash(user.password)
+        code = str(uuid4())
+        user_insert = cls.users.insert().values(
+            **user.dict(), code=code)
+        user_id = await cls.db.execute(user_insert)
+        roles = [{'user_id': user_id, 'role_id': role.value}
+                 for role in role_mappings]
+        role_insert = cls.users_roles.insert()
+        returned_values = await cls.db.execute_many(query=role_insert, values=roles)
+        validation_url = f'{Envs.BACKEND_URL}/accounts/verify-account?email={user.email}&verification_code={code}'
+        body_email = BodyEmail(
+            validation_url=validation_url,
+            title='Validate Account on School Management System',
+            h3='Thank you for registering!',
+            p='Click this button to validate and login to your account',
+            button_title='Validate'
+        )
+        send_email(background_tasks,
+                   user.email, 'Validate your account', body_email)
         return UserRegisterResponse(id=user_id)
 
     @classmethod
