@@ -48,7 +48,7 @@ app.include_router(faculties_router)
 # Root path operation function
 @app.get('/')
 def root():
-    return {'Welcome to school system application version: 0.0.1'}
+    return 'Welcome to school system application version: 0.0.1'
 
 # running the service from manage.py file
 

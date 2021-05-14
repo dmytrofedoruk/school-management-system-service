@@ -27,7 +27,7 @@ account_router = APIRouter(prefix='/accounts', tags=['accounts'])
 
 @account_router.get('/')
 async def index(user: UserSchema = Depends(get_user)):
-    return {'message': 'This is accounts route index'}
+    return 'This is accounts route index'
 
 
 @account_router.post('/register/student', response_model=UserRegisterResponse)

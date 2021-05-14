@@ -7,8 +7,9 @@ from sqlalchemy.sql import select, update
 from fastapi import HTTPException, status, BackgroundTasks
 
 from ..config import db, Envs
-from ..utils.email import send_email, BodyEmail
 from ..tables import users, users_roles, roles
+from ..utils.email import send_email, BodyEmail
+from ..utils.context_managers import transaction
 from ..schemas import UserSchema, UserRegisterRequest, UserRegisterResponse, UserLoginRequest, UserLoginResponse, RoleEnum, UserRegisterWithRole, UserVerification, ChangePasswordRequest
 
 
@@ -20,63 +21,47 @@ class User:
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
     @classmethod
+    @transaction(db)
     async def register(cls, user: UserRegisterRequest, role_mappings: List[RoleEnum], background_tasks: BackgroundTasks) -> UserRegisterResponse:
-        response: UserRegisterResponse
-        user_id: int
-        transaction = await cls.db.transaction()
-        try:
-            user.password = cls.pwd_context.hash(user.password)
-            code = str(uuid4())
-            user_insert = cls.users.insert().values(
-                **user.dict(), code=code)
-            user_id = await cls.db.execute(user_insert)
-            roles = [{'user_id': user_id, 'role_id': role.value}
-                     for role in role_mappings]
-            role_insert = cls.users_roles.insert()
-            returned_values = await cls.db.execute_many(query=role_insert, values=roles)
-            validation_url = f'{Envs.BACKEND_URL}/accounts/verify-account?email={user.email}&verification_code={code}'
-            body_email = BodyEmail(
-                validation_url=validation_url,
-                title='Validate Account on School Management System',
-                h3='Thank you for registering!',
-                p='Click this button to validate and login to your account',
-                button_title='Validate'
-            )
-            send_email(background_tasks,
-                       user.email, 'Validate your account', body_email)
-        except Exception as error:
-            await transaction.rollback()
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Failed to register account')
-        else:
-            await transaction.commit()
-
+        user.password = cls.pwd_context.hash(user.password)
+        code = str(uuid4())
+        user_insert = cls.users.insert().values(
+            **user.dict(), code=code)
+        user_id = await cls.db.execute(user_insert)
+        roles = [{'user_id': user_id, 'role_id': role.value}
+                 for role in role_mappings]
+        role_insert = cls.users_roles.insert()
+        returned_values = await cls.db.execute_many(query=role_insert, values=roles)
+        validation_url = f'{Envs.BACKEND_URL}/accounts/verify-account?email={user.email}&verification_code={code}'
+        body_email = BodyEmail(
+            validation_url=validation_url,
+            title='Validate Account on School Management System',
+            h3='Thank you for registering!',
+            p='Click this button to validate and login to your account',
+            button_title='Validate'
+        )
+        send_email(background_tasks,
+                   user.email, 'Validate your account', body_email)
         return UserRegisterResponse(id=user_id)
 
     @classmethod
+    @transaction(db)
     async def login(cls, user: UserLoginRequest) -> UserLoginResponse:
-        try:
-            authenticated_user = await cls.authenticate_user(user.email, user.password)
-            token_expires = timedelta(hours=Envs.ACCESS_TOKEN_EXPIRE_HOURS)
-            jwt_token = cls.create_access_token(
-                {'sub': authenticated_user.email}, token_expires)
-            return UserLoginResponse(token_type='Bearer', access_token=jwt_token)
-        except Exception as error:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Wrong email or password')
+        authenticated_user = await cls.authenticate_user(user.email, user.password)
+        token_expires = timedelta(hours=Envs.ACCESS_TOKEN_EXPIRE_HOURS)
+        jwt_token = cls.create_access_token(
+            {'sub': authenticated_user.email}, token_expires)
+        return UserLoginResponse(token_type='Bearer', access_token=jwt_token)
 
     @classmethod
+    @transaction(db)
     async def authenticate_user(cls, email: str, password: str):
-        try:
-            user = await cls.get_user(email)
-            verified = cls.pwd_context.verify(password, user.password)
-            if verified:
-                return user
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail='Wrong email or password')
-        except Exception as error:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail='Wrong email or password')
+        user = await cls.get_user(email)
+        verified = cls.pwd_context.verify(password, user.password)
+        if verified and user.is_validated:
+            return user
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail='Wrong email or password')
 
     @classmethod
     def create_access_token(cls, data: dict, expires_delta: Optional[timedelta] = None) -> str:
@@ -108,100 +93,60 @@ class User:
                 status_code=status.HTTP_404_NOT_FOUND, detail='User not found')
 
     @classmethod
+    @transaction(db)
     async def verify_account(cls, user_verification_data: UserVerification):
-        transaction = await cls.db.transaction()
-        try:
-            user = await cls.get_user(user_verification_data.email)
-            if user.code == user_verification_data.verification_code:
-                update_query = update(cls.users).where(
-                    cls.users.c.email == user_verification_data.email).values(is_validated=True, code=None)
-                await cls.db.execute(query=update_query)
-        except HTTPException as error:
-            await transaction.rollback()
-            raise error
-        except Exception as error:
-            await transaction.rollback()
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Error to validate account')
-        else:
-            await transaction.commit()
+        user = await cls.get_user(user_verification_data.email)
+        if user.code == user_verification_data.verification_code:
+            update_query = update(cls.users).where(
+                cls.users.c.email == user_verification_data.email).values(is_validated=True, code=None)
+            await cls.db.execute(query=update_query)
 
     @classmethod
+    @transaction(db)
     async def resend_email(cls, email: str, background_tasks: BackgroundTasks):
-        transaction = await cls.db.transaction()
-        try:
-            user = await cls.get_user(email)
-            code = str(uuid4())
-            validation_url = f'{Envs.BACKEND_URL}/accounts/verify-account?email={user.email}&verification_code={code}'
-            body_email = BodyEmail(
-                validation_url=validation_url,
-                title='Validate Account on School Management System',
-                h3='Thank you for registering!',
-                p='Click this button to validate and login to your account',
-                button_title='Validate'
-            )
-            send_email(background_tasks,
-                       user.email, 'Validate your account', body_email)
-            update_query = update(cls.users).where(
-                cls.users.c.email == user.email).values(is_validated=False, code=code)
-            await cls.db.execute(query=update_query)
-        except HTTPException as error:
-            await transaction.rollback()
-            raise error
-        except Exception as error:
-            await transaction.rollback()
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Error to resend email')
-        else:
-            await transaction.commit()
+        user = await cls.get_user(email)
+        code = str(uuid4())
+        validation_url = f'{Envs.BACKEND_URL}/accounts/verify-account?email={user.email}&verification_code={code}'
+        body_email = BodyEmail(
+            validation_url=validation_url,
+            title='Validate Account on School Management System',
+            h3='Thank you for registering!',
+            p='Click this button to validate and login to your account',
+            button_title='Validate'
+        )
+        send_email(background_tasks,
+                   user.email, 'Validate your account', body_email)
+        update_query = update(cls.users).where(
+            cls.users.c.email == user.email).values(is_validated=False, code=code)
+        await cls.db.execute(query=update_query)
 
     @classmethod
+    @transaction(db)
     async def ask_change_password(cls, email: str, background_tasks: BackgroundTasks):
-        transaction = await cls.db.transaction()
-        try:
-            user = await cls.get_user(email)
-            code = str(uuid4())
-            change_password_url = f'{Envs.FRONTEND_URL}/auth/change-password?email={user.email}&verification_code={code}'
-            body_email = BodyEmail(
-                validation_url=change_password_url,
-                title='Change your password',
-                h3='Thank you for using SSMS!',
-                p='Click this button to be redirected to change your password',
-                button_title='Change Password'
-            )
-            send_email(background_tasks,
-                       user.email, 'Change password',  body_email)
-            update_query = update(cls.users).where(
-                cls.users.c.email == user.email).values(code=code)
-            await cls.db.execute(query=update_query)
-        except HTTPException as error:
-            await transaction.rollback()
-            raise error
-        except Exception as error:
-            await transaction.rollback()
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Error to ask change password email')
-        else:
-            await transaction.commit()
+        user = await cls.get_user(email)
+        code = str(uuid4())
+        change_password_url = f'{Envs.FRONTEND_URL}/auth/change-password?email={user.email}&verification_code={code}'
+        body_email = BodyEmail(
+            validation_url=change_password_url,
+            title='Change your password',
+            h3='Thank you for using SSMS!',
+            p='Click this button to be redirected to change your password',
+            button_title='Change Password'
+        )
+        send_email(background_tasks,
+                   user.email, 'Change password',  body_email)
+        update_query = update(cls.users).where(
+            cls.users.c.email == user.email).values(code=code)
+        await cls.db.execute(query=update_query)
 
     @classmethod
+    @transaction(db)
     async def change_password(cls, request: ChangePasswordRequest, email: str, verification_code: str):
-        transaction = await cls.db.transaction()
-        try:
-            user = await cls.get_user(email)
-            if user.code == verification_code:
-                update_query = update(cls.users).where(
-                    cls.users.c.email == user.email).values(password=cls.pwd_context.hash(request.password), code=None)
-                await cls.db.execute(query=update_query)
-        except HTTPException as error:
-            await transaction.rollback()
-            raise error
-        except Exception as error:
-            await transaction.rollback()
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Error to change password')
-        else:
-            await transaction.commit()
+        user = await cls.get_user(email)
+        if user.code == verification_code:
+            update_query = update(cls.users).where(
+                cls.users.c.email == user.email).values(password=cls.pwd_context.hash(request.password), code=None)
+            await cls.db.execute(query=update_query)
 
 
 class Role:
