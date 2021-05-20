@@ -1,0 +1,26 @@
+version: "3"
+services:
+  app-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bash -c "alembic upgrade head && python manage.py run"
+    volumes:
+      - "./:/app"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db-test
+  db-test:
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${SSMS_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${SSMS_POSTGRES_PASSWORD}
+      - POSTGRES_DB=${SSMS_DB}
+    volumes:
+      - ssms-db-data-test:/var/lib/postgresql/data
+volumes:
+  ssms-db-data-test:
+    driver: local
