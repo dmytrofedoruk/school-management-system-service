@@ -19,7 +19,8 @@ New Tasks:
 - New field on user's table called 'approved'
 - Create a table of faculties_students contains faculty_id, student_id, approved
 - Create a table of departements_students contains departement_id, student_id, approved
-- Change roles: high admin, faculty admin, departement admin, class admin, student
+- Create table roles
+- Create table authorizations
 - New field on departement's table called 'faculty_id'
 - New field on class' table called 'departement_id'
 - Create table to connect teacher and faculty
