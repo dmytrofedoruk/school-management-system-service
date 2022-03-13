@@ -1,4 +1,4 @@
-# School System Management Backend Service
+# School Management System Backend Service
 
-Build School System Management using FastAPI.
+Build School Management System using FastAPI.
 This project is some kind of Google Classroom alternative.
