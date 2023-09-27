@@ -1,0 +1,77 @@
+namespace: school-management-system-service
+school-management-system-service:
+  defines: runnable
+  metadata:
+    name: school-management-system-service
+    description: A school management system service.
+    icon: https://emojiapi.dev/api/v1/robot.svg
+  containers:
+    school-management-system-service:
+      build: .
+  services:
+    app:
+      container: school-management-system-service
+      port: 8000
+      host-port: 8000
+      publish: false
+      protocol: TCP
+      description: Main application's port
+  connections:
+    db:
+      target: school-management-system-service/db
+      service: postgres
+    pgadmin:
+      target: school-management-system-service/pgadmin-ui
+      service: pgadmin-svc
+  variables:
+    pythondontwritebytecode:
+      env: PYTHONDONTWRITEBYTECODE
+      type: int
+      description: >-
+        Prevents Python from writing .pyc or .pyo files on the import of source
+        modules.
+      value: '1'
+    pythonunbuffered:
+      env: PYTHONUNBUFFERED
+      type: int
+      description: >-
+        Ensures that the python output is sent straight to terminal without
+        being first buffered.
+      value: '1'
+    database-url:
+      env: DATABASE_URL
+      type: string
+      description: Link to PostgreSQL database.
+      value: <- connection-hostname("db")
+    secret-key:
+      env: SECRET_KEY
+      type: string
+      description: JWT Secret key.
+      value: '!!!SETME!!!'
+    algorithm:
+      env: ALGORITHM
+      type: string
+      description: JWT Algorithm.
+      value: '!!!SETME!!!'
+    ssms-pgadmin-email:
+      env: SSMS_PGADMIN_EMAIL
+      type: string
+      description: Email for pgAdmin service.
+      value: '!!!SETME!!!'
+    ssms-pgadmin-password:
+      env: SSMS_PGADMIN_PASSWORD
+      type: string
+      description: Password for pgAdmin service.
+      value: '!!!SETME!!!'
+db:
+  defines: runnable
+  inherits: postgresql/db
+pgadmin-ui:
+  defines: runnable
+  inherits: pgadmin/pgadmin-ui
+stack:
+  defines: group
+  runnable-list:
+    - school-management-system-service/school-management-system-service
+    - school-management-system-service/db
+    - school-management-system-service/pgadmin-ui
