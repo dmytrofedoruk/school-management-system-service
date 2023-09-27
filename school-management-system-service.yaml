@@ -1,0 +1,113 @@
+namespace: school-management-system-service
+school-management-system-service:
+  defines: runnable
+  metadata:
+    name: school-management-system-service
+    description: A FastAPI service for managing a school system.
+    icon: https://emojiapi.dev/api/v1/school.svg
+  containers:
+    school-management-system-service:
+      build: .
+  services:
+    default:
+      container: school-management-system-service
+      port: <- $port
+      host-port: <- $port
+      publish: false
+      protocol: TCP
+      description: The primary port that the service is exposed on.
+  connections:
+    database:
+      target: school-management-system-service/db
+      service: postgres
+    mail-server:
+      target: school-management-system-service/haproxy
+      service: haproxy
+  variables:
+    database-url:
+      env: DATABASE_URL
+      type: string
+      description: The URL of the postgres database that the service connects to.
+      value: <- connection-hostname("database")
+    secret-key:
+      env: SECRET_KEY
+      type: string
+      description: The secret key used for encryption.
+      value: '!!!SETME!!!'
+    algorithm:
+      env: ALGORITHM
+      type: string
+      description: The algorithm used for encryption.
+      value: '!!!SETME!!!'
+    access-token-expire-hours:
+      env: ACCESS_TOKEN_EXPIRE_HOURS
+      type: int
+      description: Hours after which the access token will expire.
+      value: '!!!SETME!!!'
+    host:
+      env: HOST
+      type: string
+      description: The host on which the service runs.
+      value: '!!!SETME!!!'
+    port:
+      env: PORT
+      type: int
+      description: The port on which the service runs.
+      value: '!!!SETME!!!'
+    backend-url:
+      env: BACKEND_URL
+      type: string
+      description: The URL of the server backend.
+      value: '!!!SETME!!!'
+    frontend-url:
+      env: FRONTEND_URL
+      type: string
+      description: The URL of the server frontend.
+      value: '!!!SETME!!!'
+    environment:
+      env: ENVIRONMENT
+      type: string
+      description: The environment in which the service is running.
+      value: '!!!SETME!!!'
+    mail-username:
+      env: MAIL_USERNAME
+      type: string
+      description: The username for mail server.
+      value: '!!!SETME!!!'
+    mail-password:
+      env: MAIL_PASSWORD
+      type: string
+      description: The password for mail server.
+      value: '!!!SETME!!!'
+    mail-from:
+      env: MAIL_FROM
+      type: string
+      description: Who the mail is sent from.
+      value: '!!!SETME!!!'
+    mail-port:
+      env: MAIL_PORT
+      type: int
+      description: The port of the mail server.
+      value: <- connection-port("mail-server")
+    mail-server:
+      env: MAIL_SERVER
+      type: string
+      description: The server of the mail.
+      value: <- connection-hostname("mail-server")
+    mail-from-name:
+      env: MAIL_FROM_NAME
+      type: string
+      description: The name of mail sender.
+      value: '!!!SETME!!!'
+db:
+  defines: runnable
+  inherits: postgresql/db
+haproxy:
+  defines: runnable
+  inherits: haproxy/haproxy
+stack:
+  defines: group
+  runnable-list:
+    - school-management-system-service/school-management-system-service
+    - school-management-system-service/db
+    - school-management-system-service/haproxy
