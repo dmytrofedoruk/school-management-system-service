@@ -1,0 +1,115 @@
+namespace: school-management-system-service
+school-management-system-service:
+  defines: runnable
+  metadata:
+    name: school-management-system-service
+    description: >-
+      A service for managing school systems, including accounts, classrooms,
+      departments, and faculties.
+    icon: https://emojiapi.dev/api/v1/school.svg
+  containers:
+    school-management-system-service:
+      build: .
+  services:
+    application-port:
+      container: school-management-system-service
+      port: <- $port
+      host-port: <- $port
+      publish: false
+      protocol: TCP
+      description: Main application port
+  connections:
+    postgres-db:
+      target: school-management-system-service/db
+      service: postgres
+    mail-server:
+      target: school-management-system-service/server
+      service: http
+  variables:
+    database-url:
+      env: DATABASE_URL
+      type: string
+      description: Database connection string
+      value: <- connection-hostname("postgres-db")
+    secret-key:
+      env: SECRET_KEY
+      type: string
+      description: Secret key used in cryptography
+      value: '!!!SETME!!!'
+    algorithm:
+      env: ALGORITHM
+      type: string
+      description: Algorithm name used in cryptography
+      value: '!!!SETME!!!'
+    access-token-expire-hours:
+      env: ACCESS_TOKEN_EXPIRE_HOURS
+      type: int
+      description: Expiration hours for access token
+      value: '!!!SETME!!!'
+    host:
+      env: HOST
+      type: string
+      description: Host address to bind
+      value: '!!!SETME!!!'
+    port:
+      env: PORT
+      type: int
+      description: Port for the application to listen on
+      value: '!!!SETME!!!'
+    backend-url:
+      env: BACKEND_URL
+      type: string
+      description: Backend server URL
+      value: '!!!SETME!!!'
+    frontend-url:
+      env: FRONTEND_URL
+      type: string
+      description: Frontend server URL
+      value: '!!!SETME!!!'
+    environment:
+      env: ENVIRONMENT
+      type: string
+      description: Application environment ('development' or 'production')
+      value: '!!!SETME!!!'
+    mail-username:
+      env: MAIL_USERNAME
+      type: string
+      description: Username used to connect to mail server
+      value: '!!!SETME!!!'
+    mail-password:
+      env: MAIL_PASSWORD
+      type: string
+      description: Password used to connect to mail server
+      value: '!!!SETME!!!'
+    mail-from:
+      env: MAIL_FROM
+      type: string
+      description: Email address to send emails from
+      value: '!!!SETME!!!'
+    mail-port:
+      env: MAIL_PORT
+      type: int
+      description: Mail server port
+      value: <- connection-port("mail-server")
+    mail-server:
+      env: MAIL_SERVER
+      type: string
+      description: Mail server host
+      value: <- connection-hostname("mail-server")
+    mail-from-name:
+      env: MAIL_FROM_NAME
+      type: string
+      description: Sender's name in emails
+      value: '!!!SETME!!!'
+db:
+  defines: runnable
+  inherits: postgresql/db
+server:
+  defines: runnable
+  inherits: jenkins/server
+stack:
+  defines: group
+  runnable-list:
+    - school-management-system-service/school-management-system-service
+    - school-management-system-service/db
+    - school-management-system-service/server
