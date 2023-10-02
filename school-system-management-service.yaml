@@ -1,0 +1,106 @@
+namespace: school-system-management-service
+school-system-management-service:
+  defines: runnable
+  metadata:
+    name: school-system-management-service
+    description: A service to manage operations of a school system.
+    icon: https://emojiapi.dev/api/v1/robot.svg
+  containers:
+    school-system-management-service:
+      build: .
+  services:
+    main:
+      container: school-system-management-service
+      port: <- $port
+      host-port: <- $port
+      publish: false
+      protocol: TCP
+      description: Main port the application runs on.
+  connections:
+    db-dev:
+      target: school-system-management-service/db
+      service: postgres
+  variables:
+    database-url:
+      env: DATABASE_URL
+      type: string
+      description: Database URL
+      value: '!!!SETME!!!'
+    secret-key:
+      env: SECRET_KEY
+      type: string
+      description: Secret key for tokens
+      value: '!!!SETME!!!'
+    algorithm:
+      env: ALGORITHM
+      type: string
+      description: Algorithm for token security
+      value: '!!!SETME!!!'
+    access-token-expire-hours:
+      env: ACCESS_TOKEN_EXPIRE_HOURS
+      type: int
+      description: Expiration time for access token
+      value: .nan
+    host:
+      env: HOST
+      type: string
+      description: Host of the service
+      value: '!!!SETME!!!'
+    port:
+      env: PORT
+      type: int
+      description: Port of the service
+      value: 8000
+    backend-url:
+      env: BACKEND_URL
+      type: string
+      description: Backend URL
+      value: '!!!SETME!!!'
+    frontend-url:
+      env: FRONTEND_URL
+      type: string
+      description: Frontend URL
+      value: '!!!SETME!!!'
+    environment:
+      env: ENVIRONMENT
+      type: string
+      description: Environment of the service
+      value: '!!!SETME!!!'
+    mail-username:
+      env: MAIL_USERNAME
+      type: string
+      description: Mail service username
+      value: '!!!SETME!!!'
+    mail-password:
+      env: MAIL_PASSWORD
+      type: string
+      description: Mail service password
+      value: '!!!SETME!!!'
+    mail-from:
+      env: MAIL_FROM
+      type: string
+      description: Mail sender details
+      value: '!!!SETME!!!'
+    mail-port:
+      env: MAIL_PORT
+      type: int
+      description: Mail server port
+      value: .nan
+    mail-server:
+      env: MAIL_SERVER
+      type: string
+      description: Mail server URL
+      value: '!!!SETME!!!'
+    mail-from-name:
+      env: MAIL_FROM_NAME
+      type: string
+      description: Mail sender name
+      value: '!!!SETME!!!'
+db:
+  defines: runnable
+  inherits: postgresql/db
+stack:
+  defines: group
+  members:
+    - school-system-management-service/school-system-management-service
+    - school-system-management-service/db
